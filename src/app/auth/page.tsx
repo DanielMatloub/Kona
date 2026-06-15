@@ -2,18 +2,20 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const [message, setMessage] = useState('')
+  const router = useRouter()
 
   const handleSubmit = async () => {
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setMessage(error.message)
-      else setMessage('Logged in!')
+      else router.push('/')
     } else {
       const { error } = await supabase.auth.signUp({ email, password })
       if (error) setMessage(error.message)
