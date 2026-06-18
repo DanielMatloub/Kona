@@ -24,6 +24,11 @@ export default function Home() {
         .single()
 
       setProfile(profileData)
+
+      // If username looks like an email, they haven't set one yet
+      if (profileData?.username?.includes('@')) {
+        router.push('/onboarding')
+      }
     })
   }, [])
 
