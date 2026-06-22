@@ -25,8 +25,29 @@ export default function RatePage() {
 
   const searchCafes = async () => {
     if (!query) return
-    const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`)
+
+    let lat: number | null = null
+    let lon: number | null = null
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+      )
+      lat = position.coords.latitude
+      lon = position.coords.longitude
+    } catch {
+      // Location denied or unavailable, search globally
+    }
+
+    const params = new URLSearchParams({ query })
+    if (lat && lon) {
+      params.append('lat', lat.toString())
+      params.append('lon', lon.toString())
+    }
+
+    const res = await fetch(`/api/search?${params}`)
     const data = await res.json()
+    console.log('results:', data)
     setResults(data.results || [])
   }
 
@@ -45,7 +66,6 @@ export default function RatePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    // First, upsert the coffee shop
     const { data: shop, error: shopError } = await supabase
       .from('coffee_shops')
       .upsert({
@@ -59,7 +79,6 @@ export default function RatePage() {
 
     if (shopError) { setMessage(shopError.message); return }
 
-    // Then, insert the rating
     const { error: ratingError } = await supabase
       .from('ratings')
       .insert({
@@ -79,7 +98,6 @@ export default function RatePage() {
     <div className="min-h-screen bg-black text-white p-8 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold text-amber-900 mb-8">Rate a café ☕</h1>
 
-      {/* Search */}
       <label className="text-zinc-400 text-sm">Search for a coffee shop</label>
       <div className="flex gap-2 mt-1 mb-2">
         <input
@@ -98,7 +116,6 @@ export default function RatePage() {
         </button>
       </div>
 
-      {/* Search Results */}
       {results.length > 0 && (
         <div className="bg-zinc-900 rounded-lg mb-6 overflow-hidden">
           {results.map((place) => (
@@ -114,7 +131,6 @@ export default function RatePage() {
         </div>
       )}
 
-      {/* Star Rating */}
       {selectedPlace && (
         <>
           <div className="mb-6">
@@ -136,7 +152,6 @@ export default function RatePage() {
             </div>
           </div>
 
-          {/* Optional fields */}
           <label className="text-zinc-400 text-sm">What did you order? (optional)</label>
           <input
             type="text"
