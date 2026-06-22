@@ -24,45 +24,50 @@ export default function Onboarding() {
       .update({ username, display_name: displayName })
       .eq('id', user.id)
 
-    if (error) {
-      setMessage(error.message)
-    } else {
-      router.push('/')
-    }
+    if (error) setMessage(error.message)
+    else router.push('/')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="bg-zinc-900 p-8 rounded-xl w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white mb-2">Set up your profile</h1>
-        <p className="text-zinc-400 text-sm mb-6">This is how you'll appear on Kona</p>
+    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-6">
+      <h1 className="text-amber-900 font-semibold tracking-widest text-lg uppercase mb-2">
+        Kona
+      </h1>
+      <p className="text-zinc-600 text-sm mb-10">Set up your profile</p>
 
-        <label className="text-zinc-400 text-sm">Username</label>
+      <div className="w-full max-w-sm">
+        <label className="text-zinc-600 text-xs uppercase tracking-wider mb-2 block">
+          Username
+        </label>
         <input
           type="text"
-          placeholder="e.g. daniel"
+          placeholder="e.g. daniel_matl"
           value={username}
           onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ''))}
-          className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 mb-4 mt-1 outline-none"
+          className="w-full bg-zinc-900 text-white border border-zinc-800 rounded-lg px-4 py-3 mb-5 outline-none focus:border-zinc-600 transition-colors text-sm"
         />
 
-        <label className="text-zinc-400 text-sm">Display name</label>
+        <label className="text-zinc-600 text-xs uppercase tracking-wider mb-2 block">
+          Display name
+        </label>
         <input
           type="text"
           placeholder="e.g. Daniel"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
-          className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 mb-4 mt-1 outline-none"
+          className="w-full bg-zinc-900 text-white border border-zinc-800 rounded-lg px-4 py-3 mb-6 outline-none focus:border-zinc-600 transition-colors text-sm"
         />
 
         <button
           onClick={handleSave}
-          className="w-full bg-amber-900 hover:bg-amber-950 text-white font-semibold py-3 rounded-lg transition-colors"
+          className="w-full bg-amber-900 hover:bg-amber-800 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
         >
           Let's go
         </button>
 
-        {message && <p className="text-red-400 text-sm mt-4">{message}</p>}
+        {message && (
+          <p className="text-red-500 text-xs mt-4 text-center">{message}</p>
+        )}
       </div>
     </div>
   )

@@ -20,19 +20,19 @@ export default function Navbar() {
   }, [])
 
   return (
-    <nav className="bg-zinc-900 border-b border-zinc-800 px-6 py-4">
-      <div className="max-w-lg mx-auto flex items-center justify-between">
-        <Link href="/" className="text-amber-900 font-bold text-xl">
-          Kona ☕
+    <nav className="border-b border-zinc-800 px-6 py-4 bg-zinc-950">
+      <div className="max-w-xl mx-auto flex items-center justify-between">
+        <Link href="/" className="text-amber-900 font-semibold tracking-widest text-sm uppercase">
+          Kona
         </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/rate" className="text-zinc-400 hover:text-white transition-colors text-sm">
+        <div className="flex items-center gap-6">
+          <Link href="/rate" className="text-zinc-500 hover:text-white transition-colors text-xs uppercase tracking-wider">
             Rate
           </Link>
           {username && (
             <Link
               href={`/user/${username}`}
-              className="text-zinc-400 hover:text-white transition-colors text-sm"
+              className="text-zinc-500 hover:text-white transition-colors text-xs uppercase tracking-wider"
             >
               Profile
             </Link>

@@ -25,29 +25,23 @@ export default function RatePage() {
 
   const searchCafes = async () => {
     if (!query) return
-
     let lat: number | null = null
     let lon: number | null = null
-
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
       )
       lat = position.coords.latitude
       lon = position.coords.longitude
-    } catch {
-      // Location denied or unavailable, search globally
-    }
+    } catch {}
 
     const params = new URLSearchParams({ query })
     if (lat && lon) {
       params.append('lat', lat.toString())
       params.append('lon', lon.toString())
     }
-
     const res = await fetch(`/api/search?${params}`)
     const data = await res.json()
-    console.log('results:', data)
     setResults(data.results || [])
   }
 
@@ -62,7 +56,6 @@ export default function RatePage() {
       setMessage('Please select a coffee shop and a star rating')
       return
     }
-
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
@@ -90,95 +83,110 @@ export default function RatePage() {
       })
 
     if (ratingError) { setMessage(ratingError.message); return }
-
     router.push('/')
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 max-w-lg mx-auto">
-      <h1 className="text-3xl font-bold text-amber-900 mb-8">Rate a café ☕</h1>
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="max-w-xl mx-auto px-6 py-10">
+        <h1 className="text-xs uppercase tracking-widest text-zinc-600 mb-8">
+          New rating
+        </h1>
 
-      <label className="text-zinc-400 text-sm">Search for a coffee shop</label>
-      <div className="flex gap-2 mt-1 mb-2">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && searchCafes()}
-          placeholder="e.g. Blue Bottle Coffee"
-          className="flex-1 bg-zinc-800 text-white rounded-lg px-4 py-3 outline-none"
-        />
-        <button
-          onClick={searchCafes}
-          className="bg-amber-900 hover:bg-amber-950 text-white px-4 rounded-lg transition-colors"
-        >
-          Search
-        </button>
-      </div>
-
-      {results.length > 0 && (
-        <div className="bg-zinc-900 rounded-lg mb-6 overflow-hidden">
-          {results.map((place) => (
-            <button
-              key={place.fsq_id}
-              onClick={() => handleSelectPlace(place)}
-              className="w-full text-left px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800 last:border-0"
-            >
-              <p className="text-white font-medium">{place.name}</p>
-              <p className="text-zinc-400 text-sm">{place.location?.address}, {place.location?.locality}</p>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {selectedPlace && (
-        <>
-          <div className="mb-6">
-            <label className="text-zinc-400 text-sm">Stars</label>
-            <div className="flex gap-1 mt-2">
-              {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
-                <button
-                  key={value}
-                  onClick={() => setStars(value)}
-                  className={`px-2 py-1 rounded text-sm font-medium transition-colors ${
-                    stars === value
-                      ? 'bg-amber-900 text-white'
-                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                  }`}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <label className="text-zinc-400 text-sm">What did you order? (optional)</label>
+        {/* Search */}
+        <div className="flex gap-2 mb-2">
           <input
             type="text"
-            value={drinkOrdered}
-            onChange={(e) => setDrinkOrdered(e.target.value)}
-            placeholder="e.g. Oat latte"
-            className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 mt-1 mb-4 outline-none"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && searchCafes()}
+            placeholder="Search for a coffee shop..."
+            className="flex-1 bg-zinc-900 text-white border border-zinc-800 rounded-lg px-4 py-3 outline-none focus:border-zinc-600 transition-colors text-sm"
           />
-
-          <label className="text-zinc-400 text-sm">When did you visit? (optional)</label>
-          <input
-            type="date"
-            value={visitedAt}
-            onChange={(e) => setVisitedAt(e.target.value)}
-            className="w-full bg-zinc-800 text-white rounded-lg px-4 py-3 mt-1 mb-6 outline-none"
-          />
-
           <button
-            onClick={handleRate}
-            className="w-full bg-amber-900 hover:bg-amber-950 text-white font-semibold py-3 rounded-lg transition-colors"
+            onClick={searchCafes}
+            className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white px-4 rounded-lg transition-colors text-sm"
           >
-            Save rating
+            Search
           </button>
+        </div>
 
-          {message && <p className="text-red-400 text-sm mt-4">{message}</p>}
-        </>
-      )}
+        {/* Results */}
+        {results.length > 0 && (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg mb-8 overflow-hidden">
+            {results.map((place) => (
+              <button
+                key={place.fsq_id}
+                onClick={() => handleSelectPlace(place)}
+                className="w-full text-left px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800 last:border-0"
+              >
+                <p className="text-white text-sm font-medium">{place.name}</p>
+                <p className="text-zinc-600 text-xs mt-0.5">
+                  {place.location?.address}{place.location?.address && place.location?.locality ? ', ' : ''}{place.location?.locality}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Rating form */}
+        {selectedPlace && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-600 mb-3">Stars</p>
+              <div className="flex flex-wrap gap-2">
+                {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
+                  <button
+                    key={value}
+                    onClick={() => setStars(value)}
+                    className={`w-10 h-10 rounded-lg text-xs font-medium transition-colors ${
+                      stars === value
+                        ? 'bg-amber-900 text-white border border-amber-800'
+                        : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
+                    }`}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">
+                What did you order? <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
+              </p>
+              <input
+                type="text"
+                value={drinkOrdered}
+                onChange={(e) => setDrinkOrdered(e.target.value)}
+                placeholder="e.g. Oat latte"
+                className="w-full bg-zinc-900 text-white border border-zinc-800 rounded-lg px-4 py-3 outline-none focus:border-zinc-600 transition-colors text-sm"
+              />
+            </div>
+
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">
+                When did you visit? <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
+              </p>
+              <input
+                type="date"
+                value={visitedAt}
+                onChange={(e) => setVisitedAt(e.target.value)}
+                className="w-full bg-zinc-900 text-white border border-zinc-800 rounded-lg px-4 py-3 outline-none focus:border-zinc-600 transition-colors text-sm"
+              />
+            </div>
+
+            <button
+              onClick={handleRate}
+              className="w-full bg-amber-900 hover:bg-amber-800 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
+            >
+              Save rating
+            </button>
+
+            {message && <p className="text-red-500 text-xs text-center">{message}</p>}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
