@@ -30,7 +30,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-6">
-      <h1 className="text-amber-900 font-semibold tracking-widest text-lg uppercase mb-2">
+      <h1 className="text-amber-800 font-semibold tracking-widest text-lg uppercase mb-2">
         Kona
       </h1>
       <p className="text-zinc-600 text-sm mb-10">Set up your profile</p>
@@ -60,7 +60,7 @@ export default function Onboarding() {
 
         <button
           onClick={handleSave}
-          className="w-full bg-amber-900 hover:bg-amber-800 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
+          className="w-full bg-amber-800 hover:bg-amber-700 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
         >
           Let's go
         </button>

@@ -129,7 +129,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
                 </div>
                 <div className="shrink-0 text-right flex flex-col items-end gap-3">
                   <div>
-                    <p className="text-amber-900 text-sm tracking-tight">
+                    <p className="text-amber-800 text-sm tracking-tight">
   {'★'.repeat(Math.floor(rating.stars))}
   {rating.stars % 1 !== 0 ? '½' : ''}
 </p>

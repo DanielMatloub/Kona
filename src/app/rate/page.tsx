@@ -141,7 +141,7 @@ export default function RatePage() {
             onClick={() => setStars(value)}
             className={`px-3 h-10 rounded-lg text-sm transition-colors ${
               stars === value
-                ? 'bg-amber-900 text-white border border-amber-800'
+                ? 'bg-amber-800 text-white border border-amber-700'
                 : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
             }`}
           >
@@ -178,7 +178,7 @@ export default function RatePage() {
 
             <button
               onClick={handleRate}
-              className="w-full bg-amber-900 hover:bg-amber-800 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
+              className="w-full bg-amber-800 hover:bg-amber-700 text-white text-sm font-medium py-3 rounded-lg transition-colors tracking-wide"
             >
               Save rating
             </button>

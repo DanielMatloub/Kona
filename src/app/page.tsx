@@ -79,7 +79,7 @@ if (ratingsData) {
           </h1>
           <Link
             href="/rate"
-            className="text-xs uppercase tracking-widest text-amber-900 hover:text-amber-700 transition-colors"
+            className="text-xs uppercase tracking-widest text-amber-800 hover:text-amber-700 transition-colors"
           >
             + Rate
           </Link>
@@ -90,7 +90,7 @@ if (ratingsData) {
             <p className="text-zinc-700 text-sm mb-4">No ratings yet.</p>
             <Link
               href="/rate"
-              className="text-xs uppercase tracking-widest text-amber-900 hover:text-amber-700 transition-colors"
+              className="text-xs uppercase tracking-widest text-amber-800 hover:text-amber-700 transition-colors"
             >
               Be the first →
             </Link>
@@ -122,7 +122,7 @@ if (ratingsData) {
                   </Link>
                 </div>
                 <div className="shrink-0 text-right">
-  <p className="text-amber-900 text-sm tracking-tight">
+  <p className="text-amber-800 text-sm tracking-tight">
     {'★'.repeat(Math.floor(rating.stars))}
     {rating.stars % 1 !== 0 ? '½' : ''}
   </p>
