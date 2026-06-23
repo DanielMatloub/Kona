@@ -129,27 +129,27 @@ export default function RatePage() {
           </div>
         )}
 
-        {/* Rating form */}
-        {selectedPlace && (
-          <div className="space-y-6">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-zinc-600 mb-3">Stars</p>
-              <div className="flex flex-wrap gap-2">
-                {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
-                  <button
-                    key={value}
-                    onClick={() => setStars(value)}
-                    className={`w-10 h-10 rounded-lg text-xs font-medium transition-colors ${
-                      stars === value
-                        ? 'bg-amber-900 text-white border border-amber-800'
-                        : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
-                    }`}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            </div>
+{/* Rating form */}
+{selectedPlace && (
+  <div className="space-y-6">
+    <div>
+      <p className="text-xs uppercase tracking-widest text-zinc-600 mb-3">Stars</p>
+      <div className="flex flex-wrap gap-2">
+        {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
+          <button
+            key={value}
+            onClick={() => setStars(value)}
+            className={`px-3 h-10 rounded-lg text-sm transition-colors ${
+              stars === value
+                ? 'bg-amber-900 text-white border border-amber-800'
+                : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
+            }`}
+          >
+            {'★'.repeat(Math.floor(value))}{value % 1 !== 0 ? '½' : ''}
+          </button>
+        ))}
+      </div>
+    </div>
 
             <div>
               <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">

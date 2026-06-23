@@ -16,6 +16,7 @@ interface Rating {
 }
 
 interface Profile {
+  id: string
   username: string
   display_name: string | null
 }
@@ -25,6 +26,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
   const [profile, setProfile] = useState<Profile | null>(null)
   const [ratings, setRatings] = useState<Rating[]>([])
   const [notFound, setNotFound] = useState(false)
+  const [isOwnProfile, setIsOwnProfile] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -37,6 +39,9 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
       if (!profileData) { setNotFound(true); return }
       setProfile(profileData)
 
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user && profileData.id === user.id) setIsOwnProfile(true)
+
       const { data: ratingsData } = await supabase
         .from('ratings')
         .select(`*, coffee_shops(name, city)`)
@@ -47,6 +52,17 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
     }
     load()
   }, [username])
+
+  const handleDelete = async (ratingId: string) => {
+    const { error } = await supabase
+      .from('ratings')
+      .delete()
+      .eq('id', ratingId)
+
+    if (!error) {
+      setRatings(ratings.filter((r) => r.id !== ratingId))
+    }
+  }
 
   if (notFound) return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
@@ -64,7 +80,6 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-xl mx-auto px-6 py-10">
 
-        {/* Profile header */}
         <div className="mb-10">
           <h1 className="text-2xl font-semibold text-white">
             {profile.display_name || profile.username}
@@ -85,7 +100,6 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
           </div>
         </div>
 
-        {/* Ratings list */}
         {ratings.length === 0 ? (
           <p className="text-zinc-700 text-sm">No ratings yet.</p>
         ) : (
@@ -113,11 +127,21 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
                     </p>
                   )}
                 </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-amber-900 font-semibold text-lg leading-none">
-                    {rating.stars}
-                  </p>
-                  <p className="text-amber-900 text-xs opacity-60 mt-1">★</p>
+                <div className="shrink-0 text-right flex flex-col items-end gap-3">
+                  <div>
+                    <p className="text-amber-900 text-sm tracking-tight">
+  {'★'.repeat(Math.floor(rating.stars))}
+  {rating.stars % 1 !== 0 ? '½' : ''}
+</p>
+                  </div>
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => handleDelete(rating.id)}
+                      className="text-zinc-700 hover:text-red-500 text-xs transition-colors"
+                    >
+                      delete
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

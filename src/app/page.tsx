@@ -122,11 +122,11 @@ if (ratingsData) {
                   </Link>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-amber-900 font-semibold text-lg leading-none">
-                    {rating.stars}
-                  </p>
-                  <p className="text-amber-900 text-xs opacity-60 mt-1">★</p>
-                </div>
+  <p className="text-amber-900 text-sm tracking-tight">
+    {'★'.repeat(Math.floor(rating.stars))}
+    {rating.stars % 1 !== 0 ? '½' : ''}
+  </p>
+</div>
               </div>
             ))}
           </div>
