@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 interface Place {
   fsq_id: string
   name: string
+  lat: number
+  lon: number
   location: {
     address: string
     locality: string
@@ -60,15 +62,17 @@ export default function RatePage() {
     if (!user) return
 
     const { data: shop, error: shopError } = await supabase
-      .from('coffee_shops')
-      .upsert({
-        name: selectedPlace.name,
-        address: selectedPlace.location?.address,
-        city: selectedPlace.location?.locality,
-        google_place_id: selectedPlace.fsq_id,
-      }, { onConflict: 'google_place_id' })
-      .select()
-      .single()
+  .from('coffee_shops')
+  .upsert({
+    name: selectedPlace.name,
+    address: selectedPlace.location?.address,
+    city: selectedPlace.location?.locality,
+    google_place_id: selectedPlace.fsq_id,
+    lat: selectedPlace.lat,
+    lon: selectedPlace.lon,
+  }, { onConflict: 'google_place_id' })
+  .select()
+  .single()
 
     if (shopError) { setMessage(shopError.message); return }
 

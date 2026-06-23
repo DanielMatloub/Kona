@@ -3,6 +3,9 @@
 import { useEffect, useState, use } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const Map = dynamic(() => import('@/components/Map'), { ssr: false })
 
 interface Rating {
   id: string
@@ -12,6 +15,8 @@ interface Rating {
   coffee_shops: {
     name: string
     city: string
+    lat: number | null
+    lon: number | null
   }
 }
 
@@ -44,7 +49,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
 
       const { data: ratingsData } = await supabase
         .from('ratings')
-        .select(`*, coffee_shops(name, city)`)
+        .select(`*, coffee_shops(name, city, lat, lon)`)
         .eq('user_id', profileData.id)
         .order('created_at', { ascending: false })
 
@@ -100,7 +105,24 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
           </div>
         </div>
 
-        {ratings.length === 0 ? (
+        {ratings.length > 0 && (
+  <div className="mb-8">
+    <Map
+      pins={ratings
+        .filter((r) => r.coffee_shops.lat && r.coffee_shops.lon)
+        .map((r) => ({
+          lat: r.coffee_shops.lat!,
+          lon: r.coffee_shops.lon!,
+          name: r.coffee_shops.name,
+          city: r.coffee_shops.city,
+          stars: r.stars,
+        }))}
+      height="300px"
+    />
+  </div>
+)}
+
+{ratings.length === 0 ? (
           <p className="text-zinc-700 text-sm">No ratings yet.</p>
         ) : (
           <div className="space-y-3">

@@ -30,6 +30,8 @@ export async function GET(request: NextRequest) {
     results: data.map((place: any) => ({
       fsq_id: place.place_id.toString(),
       name: place.display_name.split(',')[0],
+      lat: parseFloat(place.lat),
+      lon: parseFloat(place.lon),
       location: {
         address: place.address?.road || place.address?.pedestrian || '',
         locality: place.address?.city || place.address?.town || place.address?.village || '',
