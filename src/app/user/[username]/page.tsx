@@ -85,6 +85,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
     <div className="min-h-screen bg-zinc-950 text-white">
       <div className="max-w-xl mx-auto px-6 py-10">
 
+        {/* Profile header */}
         <div className="mb-10">
           <h1 className="text-2xl font-semibold text-white">
             {profile.display_name || profile.username}
@@ -105,24 +106,26 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
           </div>
         </div>
 
+        {/* Map */}
         {ratings.length > 0 && (
-  <div className="mb-8">
-    <Map
-      pins={ratings
-        .filter((r) => r.coffee_shops.lat && r.coffee_shops.lon)
-        .map((r) => ({
-          lat: r.coffee_shops.lat!,
-          lon: r.coffee_shops.lon!,
-          name: r.coffee_shops.name,
-          city: r.coffee_shops.city,
-          stars: r.stars,
-        }))}
-      height="300px"
-    />
-  </div>
-)}
+          <div className="mb-8">
+            <Map
+              pins={ratings
+                .filter((r) => r.coffee_shops.lat && r.coffee_shops.lon)
+                .map((r) => ({
+                  lat: r.coffee_shops.lat!,
+                  lon: r.coffee_shops.lon!,
+                  name: r.coffee_shops.name,
+                  city: r.coffee_shops.city,
+                  stars: r.stars,
+                }))}
+              height="300px"
+            />
+          </div>
+        )}
 
-{ratings.length === 0 ? (
+        {/* Ratings list */}
+        {ratings.length === 0 ? (
           <p className="text-zinc-700 text-sm">No ratings yet.</p>
         ) : (
           <div className="space-y-3">
@@ -150,12 +153,10 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
                   )}
                 </div>
                 <div className="shrink-0 text-right flex flex-col items-end gap-3">
-                  <div>
-                    <p className="text-amber-800 text-sm tracking-tight">
-  {'★'.repeat(Math.floor(rating.stars))}
-  {rating.stars % 1 !== 0 ? '½' : ''}
-</p>
-                  </div>
+                  <p className="text-amber-800 text-sm tracking-tight">
+                    {'★'.repeat(Math.floor(rating.stars))}
+                    {rating.stars % 1 !== 0 ? '½' : ''}
+                  </p>
                   {isOwnProfile && (
                     <button
                       onClick={() => handleDelete(rating.id)}

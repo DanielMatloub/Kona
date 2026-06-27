@@ -58,21 +58,22 @@ export default function RatePage() {
       setMessage('Please select a coffee shop and a star rating')
       return
     }
+
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
     const { data: shop, error: shopError } = await supabase
-  .from('coffee_shops')
-  .upsert({
-    name: selectedPlace.name,
-    address: selectedPlace.location?.address,
-    city: selectedPlace.location?.locality,
-    google_place_id: selectedPlace.fsq_id,
-    lat: selectedPlace.lat,
-    lon: selectedPlace.lon,
-  }, { onConflict: 'google_place_id' })
-  .select()
-  .single()
+      .from('coffee_shops')
+      .upsert({
+        name: selectedPlace.name,
+        address: selectedPlace.location?.address,
+        city: selectedPlace.location?.locality,
+        google_place_id: selectedPlace.fsq_id,
+        lat: selectedPlace.lat,
+        lon: selectedPlace.lon,
+      }, { onConflict: 'google_place_id' })
+      .select()
+      .single()
 
     if (shopError) { setMessage(shopError.message); return }
 
@@ -126,38 +127,41 @@ export default function RatePage() {
               >
                 <p className="text-white text-sm font-medium">{place.name}</p>
                 <p className="text-zinc-600 text-xs mt-0.5">
-                  {place.location?.address}{place.location?.address && place.location?.locality ? ', ' : ''}{place.location?.locality}
+                  {place.location?.address}
+                  {place.location?.address && place.location?.locality ? ', ' : ''}
+                  {place.location?.locality}
                 </p>
               </button>
             ))}
           </div>
         )}
 
-{/* Rating form */}
-{selectedPlace && (
-  <div className="space-y-6">
-    <div>
-      <p className="text-xs uppercase tracking-widest text-zinc-600 mb-3">Stars</p>
-      <div className="flex flex-wrap gap-2">
-        {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
-          <button
-            key={value}
-            onClick={() => setStars(value)}
-            className={`px-3 h-10 rounded-lg text-sm transition-colors ${
-              stars === value
-                ? 'bg-amber-800 text-white border border-amber-700'
-                : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
-            }`}
-          >
-            {'★'.repeat(Math.floor(value))}{value % 1 !== 0 ? '½' : ''}
-          </button>
-        ))}
-      </div>
-    </div>
+        {/* Rating form */}
+        {selectedPlace && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-zinc-600 mb-3">Stars</p>
+              <div className="flex flex-wrap gap-2">
+                {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => (
+                  <button
+                    key={value}
+                    onClick={() => setStars(value)}
+                    className={`px-3 h-10 rounded-lg text-sm transition-colors ${
+                      stars === value
+                        ? 'bg-amber-800 text-white border border-amber-700'
+                        : 'bg-zinc-900 text-zinc-500 border border-zinc-800 hover:border-zinc-600 hover:text-white'
+                    }`}
+                  >
+                    {'★'.repeat(Math.floor(value))}{value % 1 !== 0 ? '½' : ''}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div>
               <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">
-                What did you order? <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
+                What did you order?{' '}
+                <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
               </p>
               <input
                 type="text"
@@ -170,7 +174,8 @@ export default function RatePage() {
 
             <div>
               <p className="text-xs uppercase tracking-widest text-zinc-600 mb-2">
-                When did you visit? <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
+                When did you visit?{' '}
+                <span className="text-zinc-700 normal-case tracking-normal">(optional)</span>
               </p>
               <input
                 type="date"

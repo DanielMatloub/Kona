@@ -39,32 +39,28 @@ export default function Home() {
       if (profile?.username?.includes('@')) { router.push('/onboarding'); return }
       setUsername(profile?.username || null)
 
-      const { data: ratingsData, error: ratingsError } = await supabase
-  .from('ratings')
-  .select(`*, coffee_shops(name, city)`)
-  .order('created_at', { ascending: false })
-  .limit(20)
+      const { data: ratingsData } = await supabase
+        .from('ratings')
+        .select(`*, coffee_shops(name, city)`)
+        .order('created_at', { ascending: false })
+        .limit(20)
 
-console.log('ratings error:', ratingsError)
-console.log('ratings data:', ratingsData)
+      if (ratingsData) {
+        const userIds = [...new Set(ratingsData.map((r: any) => r.user_id))]
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, username, display_name')
+          .in('id', userIds)
 
-if (ratingsData) {
-  // Fetch profiles for each unique user_id
-  const userIds = [...new Set(ratingsData.map((r: any) => r.user_id))]
-  const { data: profilesData } = await supabase
-    .from('profiles')
-    .select('id, username, display_name')
-    .in('id', userIds)
+        const profileMap = Object.fromEntries(
+          (profilesData || []).map((p: any) => [p.id, p])
+        )
 
-  const profileMap = Object.fromEntries(
-    (profilesData || []).map((p: any) => [p.id, p])
-  )
-
-  setRatings(ratingsData.map((r: any) => ({
-    ...r,
-    profiles: profileMap[r.user_id] || { username: 'unknown', display_name: null }
-  })))
-}
+        setRatings(ratingsData.map((r: any) => ({
+          ...r,
+          profiles: profileMap[r.user_id] || { username: 'unknown', display_name: null }
+        })))
+      }
     })
   }, [])
 
@@ -122,11 +118,11 @@ if (ratingsData) {
                   </Link>
                 </div>
                 <div className="shrink-0 text-right">
-  <p className="text-amber-800 text-sm tracking-tight">
-    {'★'.repeat(Math.floor(rating.stars))}
-    {rating.stars % 1 !== 0 ? '½' : ''}
-  </p>
-</div>
+                  <p className="text-amber-800 text-sm tracking-tight">
+                    {'★'.repeat(Math.floor(rating.stars))}
+                    {rating.stars % 1 !== 0 ? '½' : ''}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
-// Fix missing marker icons in Next.js
 const icon = L.divIcon({
   html: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="36" viewBox="0 0 24 36">
     <path d="M12 0C5.4 0 0 5.4 0 12c0 7.2 12 24 12 24s12-16.8 12-24c0-6.6-5.4-12-12-12z" fill="#92400e"/>
@@ -43,9 +41,9 @@ export default function Map({ pins, center, zoom = 12, height = '400px' }: MapPr
       style={{ height, width: '100%', borderRadius: '12px' }}
     >
       <TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-/>
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      />
       {pins.map((pin, i) => (
         <Marker key={i} position={[pin.lat, pin.lon]} icon={icon}>
           <Popup>
