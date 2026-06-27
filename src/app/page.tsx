@@ -18,6 +18,7 @@ interface Rating {
   profiles: {
     username: string
     display_name: string | null
+    avatar_url: string | null
   }
 }
 
@@ -49,7 +50,7 @@ export default function Home() {
         const userIds = [...new Set(ratingsData.map((r: any) => r.user_id))]
         const { data: profilesData } = await supabase
           .from('profiles')
-          .select('id, username, display_name')
+          .select('id, username, display_name, avatar_url')
           .in('id', userIds)
 
         const profileMap = Object.fromEntries(
@@ -58,7 +59,7 @@ export default function Home() {
 
         setRatings(ratingsData.map((r: any) => ({
           ...r,
-          profiles: profileMap[r.user_id] || { username: 'unknown', display_name: null }
+          profiles: profileMap[r.user_id] || { username: 'unknown', display_name: null, avatar_url: null }
         })))
       }
     })
@@ -112,9 +113,24 @@ export default function Home() {
                   )}
                   <Link
                     href={`/user/${rating.profiles.username}`}
-                    className="text-zinc-700 hover:text-zinc-400 text-xs mt-2 block transition-colors"
+                    className="flex items-center gap-2 mt-2"
                   >
-                    @{rating.profiles.username}
+                    {rating.profiles.avatar_url ? (
+                      <img
+                        src={rating.profiles.avatar_url}
+                        alt={rating.profiles.username}
+                        className="w-4 h-4 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full bg-zinc-800 flex items-center justify-center">
+                        <span className="text-zinc-600" style={{ fontSize: '8px' }}>
+                          {(rating.profiles.display_name || rating.profiles.username)[0].toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <span className="text-zinc-700 hover:text-zinc-400 text-xs transition-colors">
+                      @{rating.profiles.username}
+                    </span>
                   </Link>
                 </div>
                 <div className="shrink-0 text-right">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState, use, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -24,6 +24,7 @@ interface Profile {
   id: string
   username: string
   display_name: string | null
+  avatar_url: string | null
 }
 
 export default function UserProfile({ params }: { params: Promise<{ username: string }> }) {
@@ -32,6 +33,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
   const [ratings, setRatings] = useState<Rating[]>([])
   const [notFound, setNotFound] = useState(false)
   const [isOwnProfile, setIsOwnProfile] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -69,6 +71,36 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
     }
   }
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !profile) return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const fileExt = file.name.split('.').pop()
+    const filePath = `${user.id}/avatar.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) { console.error(uploadError); return }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath)
+
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', user.id)
+
+    if (!updateError) {
+      setProfile({ ...profile, avatar_url: publicUrl })
+    }
+  }
+
   if (notFound) return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
       <p className="text-zinc-600 text-sm">User not found</p>
@@ -87,12 +119,47 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
 
         {/* Profile header */}
         <div className="mb-10">
-          <h1 className="text-2xl font-semibold text-white">
-            {profile.display_name || profile.username}
-          </h1>
-          <p className="text-zinc-600 text-sm mt-1">@{profile.username}</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className="relative cursor-pointer group"
+              onClick={() => isOwnProfile && fileInputRef.current?.click()}
+            >
+              {profile.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.username}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center">
+                  <span className="text-zinc-600 text-xl">
+                    {(profile.display_name || profile.username)[0].toUpperCase()}
+                  </span>
+                </div>
+              )}
+              {isOwnProfile && (
+                <div className="absolute inset-0 rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="text-white text-xs">edit</span>
+                </div>
+              )}
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-white">
+                {profile.display_name || profile.username}
+              </h1>
+              <p className="text-zinc-600 text-sm mt-1">@{profile.username}</p>
+            </div>
+          </div>
 
-          <div className="flex gap-6 mt-5">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarUpload}
+            className="hidden"
+          />
+
+          <div className="flex gap-6">
             <div>
               <p className="text-white font-semibold">{ratings.length}</p>
               <p className="text-zinc-600 text-xs uppercase tracking-wider mt-0.5">Ratings</p>
