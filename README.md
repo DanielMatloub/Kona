@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kona ☕
 
-## Getting Started
+A simple coffee shop rating app. Rate cafés, track your visits, and share your profile with friends.
 
-First, run the development server:
+**Live app:** https://kona-ochre.vercel.app
 
+Built by [Daniel Matloub](https://github.com/DanielMatloub)
+
+---
+
+## Features
+
+- **Rate coffee shops** — 0.5 to 5 stars with optional drink and visit date
+- **Location-aware search** — finds shops near you using OpenStreetMap
+- **Public profiles** — shareable at `/user/username`
+- **Homepage feed** — see recent ratings from all users
+- **Interactive map** — view all your rated shops on a dark mode map
+- **Profile pictures** — upload a custom avatar
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15, TypeScript, Tailwind CSS |
+| Backend | Supabase (PostgreSQL + Auth + Storage) |
+| Maps | Leaflet.js + OpenStreetMap + CARTO tiles |
+| Deployment | Vercel |
+
+---
+
+## Running Locally
+
+**Prerequisites:** Node.js 18+, a Supabase project
+
+1. Clone the repo
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/DanielMatloub/kona.git
+cd kona
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Create a `.env.local` file
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Set up the database — run `supabase/schema.sql` in your Supabase SQL Editor
 
-## Learn More
+5. Start the dev server
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
+src/
 
-## Deploy on Vercel
+├── app/
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+│   ├── page.tsx          # Homepage feed
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+│   ├── auth/             # Login & signup
+
+│   ├── onboarding/       # Username setup
+
+│   ├── rate/             # Rate a coffee shop
+
+│   ├── user/[username]/  # Public profile page
+
+│   └── api/search/       # OpenStreetMap search API
+
+├── components/
+
+│   ├── Navbar.tsx        # Navigation
+
+│   └── Map.tsx           # Leaflet map component
+
+├── lib/
+
+│   └── supabase.ts       # Supabase client
+
+supabase/
+
+└── schema.sql            # Database schema & policies
+
+---
+
+## License
+
+MIT
